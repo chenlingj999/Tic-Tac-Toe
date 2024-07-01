@@ -18,6 +18,7 @@ function gameboard() {
     const row = 3;
     const column = 3;
     const board = [];
+    let emptyCellNum = 9;
 
     for (let i = 0; i < row; i++) {
         board[i] = [];
@@ -33,6 +34,7 @@ function gameboard() {
         if (board[row][column].readCell() == "") return;
 
         board[row][column].takeCell(player);
+        emptyCellNum--;
     }
 
     const printBoard = () => {
@@ -40,5 +42,103 @@ function gameboard() {
         console.log(boardCellValues);
     }
 
-    return {getBoard, makeMove, printBoard};
+    const getEmptyCellNum = () => emptyCellNum;
+
+    return {getBoard, makeMove, printBoard, getEmptyCellNum};
+}
+
+// Controller to control game logic such as turns and players
+function gameController(
+    playerOneName = "Player 1",
+    playerTwoName = "Player 2"
+) {
+    const board = gameboard();
+
+    const players = [
+        {
+            name: playerOneName,
+            token: "O"
+        },
+        {
+            name: playerTwoName,
+            token: "X"
+        }
+    ];
+
+    let activePlayer = players[0];
+
+    const switchPlayer = () => {
+        activePlayer = (activePlayer.token === players[0]) ? players[1] : players[0];
+    };
+
+    const getActivePlayer = () => activePlayer;
+
+    const printNewRound = () => {
+        board.printBoard();
+        console.log(`${getActivePlayer().name}'s turn.`);
+    };
+
+    const playRound = (row, column) => {
+        console.log(`Putting an ${getActivePlayer().token} in row ${row}, column ${column}.`);
+        board.makeMove(getActivePlayer().token, row, column);
+
+        // Check if it is a winning move
+        // Check rows
+        const gameGrid = board.getBoard;
+        for (const row in gameGrid) {
+            if (
+                row[0].readCell() === row[1].readCell() &&
+                row[0].readCell() === row[2].readCell() &&
+                row[0].readCell() !== ""
+            ) {
+                console.log(`${row[0].readCell()} is the winner!`)
+                return;
+            }
+        }
+        // Check columns
+        for (let col = 0; i < 3; i++) {
+            if (gameGrid[0][col].readCell() === gameGrid[1][col].readCell() &&
+                gameGrid[0][col].readCell() === gameGrid[2][col].readCell() &&
+                gameGrid[0][col].readCell() !== ""
+            ) {
+                console.log(`${gameGrid[0][col].readCell()} is the winner!`)
+                return;
+            }
+        }
+        // Check main diagonal
+        if (
+            gameGrid[0][0].readCell() === gameGrid[1][1].readCell() &&
+            gameGrid[0][0].readCell() === gameGrid[2][2].readCell() &&
+            gameGrid[0][0].readCell() !== ""
+        ) {
+            console.log(`${gameGrid[0][0].readCell()} is the winner!`)
+            return;
+        }
+        // Check anti-diagonal
+        if (
+            gameGrid[0][2].readCell() === gameGrid[1][1].readCell() &&
+            gameGrid[0][2].readCell() === gameGrid[2][0].readCell() &&
+            gameGrid[0][2].readCell() !== ""
+        ) {
+            console.log(`${gameGrid[0][2].readCell()} is the winner!`)
+            return;
+        }
+        
+        // Check if it is a tie (board is full and no winner)
+        if (board.getEmptyCellNum === 0) {
+            console.log("Game ends in a draw.");
+            return;
+        }
+
+        printNewRound();
+        switchPlayer();
+    };
+
+    printNewRound();
+
+    return {
+        playRound,
+        getActivePlayer,
+        getBoard: board.getBoard
+    };
 }

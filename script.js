@@ -91,7 +91,7 @@ function gameController(
                 gameGrid[row][0].readCell() === gameGrid[row][2].readCell() &&
                 gameGrid[row][0].readCell() !== ""
             ) {
-                console.log(`${row[0].readCell()} is the winner!`)
+                console.log(`${gameGrid[row][0].readCell()} is the winner!`)
                 return;
             }
         }

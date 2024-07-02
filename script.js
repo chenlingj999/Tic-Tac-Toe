@@ -96,7 +96,7 @@ function gameController(
             }
         }
         // Check columns
-        for (let col = 0; i < 3; i++) {
+        for (let col = 0; col < 3; col++) {
             if (gameGrid[0][col].readCell() === gameGrid[1][col].readCell() &&
                 gameGrid[0][col].readCell() === gameGrid[2][col].readCell() &&
                 gameGrid[0][col].readCell() !== ""
@@ -142,3 +142,5 @@ function gameController(
         getBoard: board.getBoard
     };
 }
+
+const game = gameController();

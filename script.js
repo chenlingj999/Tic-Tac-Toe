@@ -68,7 +68,7 @@ function gameController(
     let activePlayer = players[0];
 
     const switchPlayer = () => {
-        activePlayer = (activePlayer.token === players[0]) ? players[1] : players[0];
+        activePlayer = (activePlayer.token === players[0].token) ? players[1] : players[0];
     };
 
     const getActivePlayer = () => activePlayer;
@@ -144,4 +144,48 @@ function gameController(
     };
 }
 
-const game = gameController();
+// Function to control/display items on the screen
+function screenController() {
+    const game = gameController();
+    const playerTurnDiv = document.querySelector('.turn');
+    const boardDiv = document.querySelector('.board');
+
+    const updateScreen = () => {
+        boardDiv.textContent = "";
+        const board = game.getBoard();
+        const activePlayer = game.getActivePlayer();
+
+        // Display current active player
+        playerTurnDiv.textContent = `${activePlayer.name}'s turn.`;
+
+        board.forEach((row, index) => {
+            let rowNumber = index;
+            row.forEach((cell, index) => {
+                const cellBtn = document.createElement('button');
+                cellBtn.classList.add("cell");
+                // Add identifier to cell
+                cellBtn.dataset.column = index;
+                cellBtn.dataset.row = rowNumber;
+                
+                cellBtn.textContent = cell.readCell();
+                boardDiv.appendChild(cellBtn);
+            })
+        })
+    }
+    function boardClickHandler(e) {
+        const selectedRow = e.target.dataset.row;
+        const selectedCol = e.target.dataset.column;
+
+        if (!selectedCol || !selectedRow) return;
+
+        game.playRound(selectedRow, selectedCol);
+        updateScreen();
+    }
+
+    // Add the event listener to board
+    boardDiv.addEventListener('click', boardClickHandler);
+
+    updateScreen();
+}
+
+screenController();

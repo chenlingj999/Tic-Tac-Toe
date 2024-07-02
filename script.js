@@ -85,11 +85,11 @@ function gameController(
         // Check if it is a winning move
         // Check rows
         const gameGrid = board.getBoard();
-        for (const row in gameGrid) {
+        for (let row = 0; row < 3; row++) {
             if (
-                row[0].readCell() === row[1].readCell() &&
-                row[0].readCell() === row[2].readCell() &&
-                row[0].readCell() !== ""
+                gameGrid[row][0].readCell() === gameGrid[row][1].readCell() &&
+                gameGrid[row][0].readCell() === gameGrid[row][2].readCell() &&
+                gameGrid[row][0].readCell() !== ""
             ) {
                 console.log(`${row[0].readCell()} is the winner!`)
                 return;
@@ -97,7 +97,8 @@ function gameController(
         }
         // Check columns
         for (let col = 0; col < 3; col++) {
-            if (gameGrid[0][col].readCell() === gameGrid[1][col].readCell() &&
+            if (
+                gameGrid[0][col].readCell() === gameGrid[1][col].readCell() &&
                 gameGrid[0][col].readCell() === gameGrid[2][col].readCell() &&
                 gameGrid[0][col].readCell() !== ""
             ) {

@@ -84,7 +84,7 @@ function gameController(
 
         // Check if it is a winning move
         // Check rows
-        const gameGrid = board.getBoard;
+        const gameGrid = board.getBoard();
         for (const row in gameGrid) {
             if (
                 row[0].readCell() === row[1].readCell() &&

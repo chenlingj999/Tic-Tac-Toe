@@ -31,7 +31,7 @@ function gameboard() {
 
     const makeMove = (player, row, column) => {
         // Check if cell is empty
-        if (board[row][column].readCell() == "") return;
+        if (board[row][column].readCell() !== "") return;
 
         board[row][column].takeCell(player);
         emptyCellNum--;

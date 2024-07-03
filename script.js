@@ -126,7 +126,7 @@ function gameController(
         }
         
         // Check if it is a tie (board is full and no winner)
-        if (board.getEmptyCellNum === 0) {
+        if (board.getEmptyCellNum() === 0) {
             console.log("Game ends in a draw.");
             return;
         }

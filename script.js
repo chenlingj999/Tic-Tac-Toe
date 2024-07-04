@@ -31,10 +31,11 @@ function gameboard() {
 
     const makeMove = (player, row, column) => {
         // Check if cell is empty
-        if (board[row][column].readCell() !== "") return;
+        if (board[row][column].readCell() !== "") return false;
 
         board[row][column].takeCell(player);
         emptyCellNum--;
+        return true;
     }
 
     const printBoard = () => {
@@ -80,7 +81,13 @@ function gameController(
 
     const playRound = (row, column) => {
         console.log(`Putting an ${getActivePlayer().token} in row ${row}, column ${column}.`);
-        board.makeMove(getActivePlayer().token, row, column);
+        const success = board.makeMove(getActivePlayer().token, row, column);
+
+        // If cell already taken prevent player from losing the turn
+        if (!success) {
+            console.log("Cell is already taken. Please choose another cell.");
+            return;
+        }
 
         // Check if it is a winning move
         // Check rows

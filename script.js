@@ -98,8 +98,8 @@ function gameController(
                 gameGrid[row][0].readCell() === gameGrid[row][2].readCell() &&
                 gameGrid[row][0].readCell() !== ""
             ) {
-                console.log(`${gameGrid[row][0].readCell()} is the winner!`)
-                return;
+                console.log(`${gameGrid[row][0].readCell()} is the winner!`);
+                return true;
             }
         }
         // Check columns
@@ -109,8 +109,8 @@ function gameController(
                 gameGrid[0][col].readCell() === gameGrid[2][col].readCell() &&
                 gameGrid[0][col].readCell() !== ""
             ) {
-                console.log(`${gameGrid[0][col].readCell()} is the winner!`)
-                return;
+                console.log(`${gameGrid[0][col].readCell()} is the winner!`);
+                return true;
             }
         }
         // Check main diagonal
@@ -119,8 +119,8 @@ function gameController(
             gameGrid[0][0].readCell() === gameGrid[2][2].readCell() &&
             gameGrid[0][0].readCell() !== ""
         ) {
-            console.log(`${gameGrid[0][0].readCell()} is the winner!`)
-            return;
+            console.log(`${gameGrid[0][0].readCell()} is the winner!`);
+            return true;
         }
         // Check anti-diagonal
         if (
@@ -128,14 +128,14 @@ function gameController(
             gameGrid[0][2].readCell() === gameGrid[2][0].readCell() &&
             gameGrid[0][2].readCell() !== ""
         ) {
-            console.log(`${gameGrid[0][2].readCell()} is the winner!`)
-            return;
+            console.log(`${gameGrid[0][2].readCell()} is the winner!`);
+            return true;
         }
         
         // Check if it is a tie (board is full and no winner)
         if (board.getEmptyCellNum() === 0) {
             console.log("Game ends in a draw.");
-            return;
+            return false;
         }
 
         printNewRound();
@@ -157,7 +157,7 @@ function screenController() {
     const playerTurnDiv = document.querySelector('.turn');
     const boardDiv = document.querySelector('.board');
 
-    const updateScreen = () => {
+    const updateScreen = (win) => {
         boardDiv.textContent = "";
         const board = game.getBoard();
         const activePlayer = game.getActivePlayer();
@@ -178,15 +178,29 @@ function screenController() {
                 boardDiv.appendChild(cellBtn);
             })
         })
+        // Handle win
+        if (win) {
+            playerTurnDiv.textContent = `${activePlayer.name} has won the game!`
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach((cell) => cell.disabled = true);
+            return;
+        }
+        // Handle draw
+        if (win === false) {
+            playerTurnDiv.textContent = `The game ends in a draw.`
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach((cell) => cell.disabled = true);
+            return;
+        }
     }
+
     function boardClickHandler(e) {
         const selectedRow = e.target.dataset.row;
         const selectedCol = e.target.dataset.column;
 
         if (!selectedCol || !selectedRow) return;
-
-        game.playRound(selectedRow, selectedCol);
-        updateScreen();
+        
+        updateScreen(game.playRound(selectedRow, selectedCol));
     }
 
     // Add the event listener to board

@@ -138,8 +138,8 @@ function gameController(
             return false;
         }
 
-        printNewRound();
         switchPlayer();
+        printNewRound();
     };
 
     printNewRound();
@@ -153,7 +153,7 @@ function gameController(
 
 // Function to control/display items on the screen
 function screenController() {
-    const game = gameController();
+    let game = gameController();
     const playerTurnDiv = document.querySelector('.turn');
     const boardDiv = document.querySelector('.board');
 
@@ -183,6 +183,21 @@ function screenController() {
             playerTurnDiv.textContent = `${activePlayer.name} has won the game!`
             const cells = document.querySelectorAll('.cell');
             cells.forEach((cell) => cell.disabled = true);
+
+            // Restart game option
+            const restart = document.createElement('button');
+            restart.classList.add('.restart');
+            restart.textContent = "Restart";
+            restart.addEventListener('click', () => {
+                // Create new game
+                game = gameController();
+                restart.remove();
+                updateScreen();
+            });
+
+            const endGame = document.querySelector('.endGame');
+            endGame.appendChild(restart);
+
             return;
         }
         // Handle draw
@@ -190,6 +205,20 @@ function screenController() {
             playerTurnDiv.textContent = `The game ends in a draw.`
             const cells = document.querySelectorAll('.cell');
             cells.forEach((cell) => cell.disabled = true);
+
+            // Restart game option
+            const restart = document.createElement('button');
+            restart.classList.add('.restart');
+            restart.textContent = "Restart";
+            restart.addEventListener('click', () => {
+                // Create new game
+                game = gameController();
+                updateScreen();
+            });
+
+            const endGame = document.querySelector('.endGame');
+            endGame.appendChild(restart);
+
             return;
         }
     }

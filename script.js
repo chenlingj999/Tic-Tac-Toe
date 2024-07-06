@@ -156,7 +156,11 @@ function gameController(
 
 // Function to control/display items on the screen
 function screenController() {
-    let game = gameController();
+    // Allow user to set name
+    let player1 = prompt("What is your name? (Player 1)");
+    let player2 = prompt("What is your name? (Player 2)");
+
+    let game = gameController(player1, player2);
     const playerTurnDiv = document.querySelector('.turn');
     const boardDiv = document.querySelector('.board');
 
@@ -194,7 +198,9 @@ function screenController() {
         restart.textContent = "Restart";
         restart.addEventListener('click', () => {
             // Create new game
-            game = gameController();
+            player1 = prompt("What is your name? (Player 1)");
+            player2 = prompt("What is your name? (Player 2)");
+            game = gameController(player1, player2);
             restart.remove();
             updateScreen();
         });

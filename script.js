@@ -74,6 +74,52 @@ function gameController(
 
     const getActivePlayer = () => activePlayer;
 
+    const checkWin = () => {
+        // Check if it is a winning move
+        // Check rows
+        const gameGrid = board.getBoard();
+        for (let row = 0; row < 3; row++) {
+            if (
+                gameGrid[row][0].readCell() === gameGrid[row][1].readCell() &&
+                gameGrid[row][0].readCell() === gameGrid[row][2].readCell() &&
+                gameGrid[row][0].readCell() !== ""
+            ) {
+                return `${gameGrid[row][0].readCell()} is the winner!`;
+            }
+        }
+        // Check columns
+        for (let col = 0; col < 3; col++) {
+            if (
+                gameGrid[0][col].readCell() === gameGrid[1][col].readCell() &&
+                gameGrid[0][col].readCell() === gameGrid[2][col].readCell() &&
+                gameGrid[0][col].readCell() !== ""
+            ) {
+                return `${gameGrid[0][col].readCell()} is the winner!`;
+            }
+        }
+        // Check main diagonal
+        if (
+            gameGrid[0][0].readCell() === gameGrid[1][1].readCell() &&
+            gameGrid[0][0].readCell() === gameGrid[2][2].readCell() &&
+            gameGrid[0][0].readCell() !== ""
+        ) {
+            return `${gameGrid[0][0].readCell()} is the winner!`;
+        }
+        // Check anti-diagonal
+        if (
+            gameGrid[0][2].readCell() === gameGrid[1][1].readCell() &&
+            gameGrid[0][2].readCell() === gameGrid[2][0].readCell() &&
+            gameGrid[0][2].readCell() !== ""
+        ) {
+            return `${gameGrid[0][2].readCell()} is the winner!`;
+        }
+        
+        // Check if it is a tie (board is full and no winner)
+        if (board.getEmptyCellNum() === 0) {
+            return "Game ends in a draw.";
+        }
+    }
+
     const printNewRound = () => {
         board.printBoard();
         console.log(`${getActivePlayer().name}'s turn.`);
@@ -89,53 +135,10 @@ function gameController(
             return;
         }
 
-        // Check if it is a winning move
-        // Check rows
-        const gameGrid = board.getBoard();
-        for (let row = 0; row < 3; row++) {
-            if (
-                gameGrid[row][0].readCell() === gameGrid[row][1].readCell() &&
-                gameGrid[row][0].readCell() === gameGrid[row][2].readCell() &&
-                gameGrid[row][0].readCell() !== ""
-            ) {
-                console.log(`${gameGrid[row][0].readCell()} is the winner!`);
-                return true;
-            }
-        }
-        // Check columns
-        for (let col = 0; col < 3; col++) {
-            if (
-                gameGrid[0][col].readCell() === gameGrid[1][col].readCell() &&
-                gameGrid[0][col].readCell() === gameGrid[2][col].readCell() &&
-                gameGrid[0][col].readCell() !== ""
-            ) {
-                console.log(`${gameGrid[0][col].readCell()} is the winner!`);
-                return true;
-            }
-        }
-        // Check main diagonal
-        if (
-            gameGrid[0][0].readCell() === gameGrid[1][1].readCell() &&
-            gameGrid[0][0].readCell() === gameGrid[2][2].readCell() &&
-            gameGrid[0][0].readCell() !== ""
-        ) {
-            console.log(`${gameGrid[0][0].readCell()} is the winner!`);
-            return true;
-        }
-        // Check anti-diagonal
-        if (
-            gameGrid[0][2].readCell() === gameGrid[1][1].readCell() &&
-            gameGrid[0][2].readCell() === gameGrid[2][0].readCell() &&
-            gameGrid[0][2].readCell() !== ""
-        ) {
-            console.log(`${gameGrid[0][2].readCell()} is the winner!`);
-            return true;
-        }
-        
-        // Check if it is a tie (board is full and no winner)
-        if (board.getEmptyCellNum() === 0) {
-            console.log("Game ends in a draw.");
-            return false;
+        const winCond = checkWin();
+        if (winCond) {
+            console.log(winCond);
+            return winCond;
         }
 
         switchPlayer();
@@ -157,7 +160,7 @@ function screenController() {
     const playerTurnDiv = document.querySelector('.turn');
     const boardDiv = document.querySelector('.board');
 
-    const updateScreen = (win) => {
+    const updateScreen = () => {
         boardDiv.textContent = "";
         const board = game.getBoard();
         const activePlayer = game.getActivePlayer();
@@ -176,51 +179,28 @@ function screenController() {
                 
                 cellBtn.textContent = cell.readCell();
                 boardDiv.appendChild(cellBtn);
-            })
-        })
-        // Handle win
-        if (win) {
-            playerTurnDiv.textContent = `${activePlayer.name} has won the game!`
-            const cells = document.querySelectorAll('.cell');
-            cells.forEach((cell) => cell.disabled = true);
-
-            // Restart game option
-            const restart = document.createElement('button');
-            restart.classList.add('.restart');
-            restart.textContent = "Restart";
-            restart.addEventListener('click', () => {
-                // Create new game
-                game = gameController();
-                restart.remove();
-                updateScreen();
             });
+        });
+    }
 
-            const endGame = document.querySelector('.endGame');
-            endGame.appendChild(restart);
+    const handleEndGame = (endGameMsg) => {
+        playerTurnDiv.textContent = endGameMsg;
+        const cells = document.querySelectorAll('.cell');
+        cells.forEach((cell) => cell.disabled = true);
 
-            return;
-        }
-        // Handle draw
-        if (win === false) {
-            playerTurnDiv.textContent = `The game ends in a draw.`
-            const cells = document.querySelectorAll('.cell');
-            cells.forEach((cell) => cell.disabled = true);
+        // Restart game option
+        const restart = document.createElement('button');
+        restart.classList.add('.restart');
+        restart.textContent = "Restart";
+        restart.addEventListener('click', () => {
+            // Create new game
+            game = gameController();
+            restart.remove();
+            updateScreen();
+        });
 
-            // Restart game option
-            const restart = document.createElement('button');
-            restart.classList.add('.restart');
-            restart.textContent = "Restart";
-            restart.addEventListener('click', () => {
-                // Create new game
-                game = gameController();
-                updateScreen();
-            });
-
-            const endGame = document.querySelector('.endGame');
-            endGame.appendChild(restart);
-
-            return;
-        }
+        const endGame = document.querySelector('.endGame');
+        endGame.appendChild(restart);
     }
 
     function boardClickHandler(e) {
@@ -229,7 +209,14 @@ function screenController() {
 
         if (!selectedCol || !selectedRow) return;
         
-        updateScreen(game.playRound(selectedRow, selectedCol));
+        const endGameMsg = game.playRound(selectedRow, selectedCol);
+
+        updateScreen();
+        
+        // Check if game ended
+        if (endGameMsg) {
+            handleEndGame(endGameMsg);
+        }
     }
 
     // Add the event listener to board
